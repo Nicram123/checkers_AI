@@ -1,52 +1,75 @@
-from copy import deepcopy 
 import pygame 
+from copy import deepcopy 
+from constatnts import RED, WHITE 
 
-RED = (255, 0, 0) 
-WHITE = (255, 255, 255) 
+class MinimaxAlgorithm:
+       
+  # 
+  def mini_max(self, dep, board, if_max): 
+    if dep == 0 or board.if_win_the_game() is not None:
+        return board.score(), board
+    if not if_max:
+        return self._minimize(dep, board)
+    return self._maximize(dep, board)
 
-def minimax(position, depth, max_player, game, win):
-    if depth == 0 or position.winner() != None:
-         return position.evaluate(), position
-    if max_player:
-        maxEval = float('-inf')
-        best_move = None
-        best_piece = None
-        for move, piece in get_all_moves(position, WHITE, game, win):
-            evaluation = minimax(move, depth - 1, False, game, win)[0]
-            maxEval = max(maxEval, evaluation)
-            if maxEval == evaluation:
-                best_move = move
-                best_piece = piece
-        return maxEval, best_move, best_piece 
-      
-    else:
-        minEval = float('inf')
-        best_move = None
-        best_piece = None
-        for move, piece in get_all_moves(position, RED, game, win):
-            evaluation = minimax(move, depth - 1, True, game, win)[0]
-            minEval = min(minEval, evaluation)
-            if minEval == evaluation:
-                best_move = move 
-                best_piece = piece 
-        return minEval, best_move, best_piece
-      
-def get_all_moves(position, color, game, win):
-    moves = []
-    for piece in position.get_all_pieces(color):
-        valid_moves = piece.get_valid_moves(position)
-        #print(f'Piece {piece.row},{piece.col} color={piece.color} valid_moves={valid_moves}')
-        for move, skip in valid_moves.items():
-            temp_board = deepcopy(position)
-            temp_piece = temp_board.board[piece.row][piece.col]
-            if temp_piece != 0:
-              new_board = simulate_move(temp_piece, move, temp_board, game, skip, win)
-              moves.append((new_board, temp_piece))
-    #print(f'All moves for color {color}: {len(moves)}')
-    return moves
-  
-def simulate_move(piece, move, board, game, skip, win):
-    board.move(piece, move[0], move[1], win)
-    if skip:
-        board.remove(skip, piece.color)
-    return board
+        
+  def _maximize(self, dep, board):
+    best_piece = None
+    optimal_action = None
+    highest_evaluation = -10**6
+    for action, piece in self.all_action(board, WHITE):
+        evaluation = self.mini_max(dep - 1, action, False)[0]
+        if evaluation >= highest_evaluation:
+            highest_evaluation = evaluation
+            best_piece = piece
+            optimal_action = action
+    return highest_evaluation, optimal_action, best_piece
+
+
+  def _minimize(self, dep, board):
+    best_piece = None
+    optimal_action = None
+    lowest_evaluation = 10**6
+    for action, piece in self.all_action(board, RED):
+        evaluation = self.mini_max(dep - 1, action, True)[0]
+        if evaluation <= lowest_evaluation:
+            lowest_evaluation = evaluation
+            best_piece = piece
+            optimal_action = action
+    return lowest_evaluation, optimal_action, best_piece
+
+  # zwraca akcje czyli liste krotek gdzie (new_board, temp_obj) new_board to nowa plansza po symulowanym ruchu pionka color , temp_obj to pionek ktory ten ruch wykonal  
+  def all_action(self, board, color):
+      actions = []
+      for obj in board.list_pieces(color):
+          actual_actions = obj.possible_moves(board)
+          for action, objects in actual_actions.items():
+              temp_board = deepcopy(board)
+              temp_obj = temp_board.board[obj.row][obj.col]
+              if temp_obj != 0:
+                # jesli biale biją 
+                if color == WHITE: 
+                   # zbadaj liste wszystkich RED ktore moga byc zbite 
+                   for x in objects: 
+                     cloned_piece = temp_board.board[x.row][x.col]
+                     # jesli to damka RED 
+                     if cloned_piece.king and cloned_piece in temp_board.king_piece: 
+                        # usun z listy king_piece  
+                        temp_board.king_piece.remove(cloned_piece)
+                        # zmniejsz licznik 
+                        temp_board.number_of_kings_red -= 1
+                new_board = self.imitate_action(action, temp_obj, objects, temp_board) 
+                                
+                actions.append((new_board, temp_obj))
+      return actions
+   
+  # imitacja akcji przy symulowanym ruchu , zwraa board po takiej symulowanej akcji   
+  def imitate_action(self, action, piece, objects, board):
+      board.move(piece, action[0], action[1])  
+      #if piece.color == RED and piece.row == 0: 
+      #    piece.king = True      
+      #piece.ifKing()
+      #piece.setPictureFirstTime(board) # new_board.board[action[0]][action[1]]
+      if objects:
+          board.remove(objects)
+      return board
