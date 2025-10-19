@@ -3,6 +3,7 @@ from constatnts import WIDTH, HEIGHT, SQUARE_SIZE, WHITE, RED, BLACK, GREEN
 from board import Board 
 from piece import Piece 
 from minimax import MinimaxAlgorithm
+import time 
 
 FPS = 60
 WIN = pygame.display.set_mode((WIDTH,HEIGHT))
@@ -45,7 +46,17 @@ def main():
             board.change_turn()
             if board.turn == WHITE:
                 #board.refresh_counts()
-                value, new_board, piece_ = minimax.mini_max(5, board, True)
+                
+                # Pomiar czasu 
+                
+                depth = 5
+                start = time.time()
+                value, new_board, piece_ = minimax.mini_max(depth, board, True)
+                end = time.time()  # koniec pomiaru
+                elapsed = end - start
+                print(f"Głębokość: {depth} Czas: {elapsed:.3f} sekundy")
+                
+                
                 print(f'White left: {board.white_count}, Red left: {board.red_count}')
                 print('----------')
                 print(f'White kings: {board.number_of_kings_white}, Red kings: {board.number_of_kings_red}')
