@@ -45,7 +45,7 @@ def main():
             board.change_turn()
             if board.turn == WHITE:
                 #board.refresh_counts()
-                value, new_board, piece_ = minimax.mini_max(3, board, True)
+                value, new_board, piece_ = minimax.mini_max(5, board, True)
                 print(f'White left: {board.white_count}, Red left: {board.red_count}')
                 print('----------')
                 print(f'White kings: {board.number_of_kings_white}, Red kings: {board.number_of_kings_red}')

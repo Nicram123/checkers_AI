@@ -1,41 +1,64 @@
 import pygame 
 from copy import deepcopy 
-from constatnts import RED, WHITE 
+from constatnts import RED, WHITE
+import math  
 
 class MinimaxAlgorithm:
        
   # 
-  def mini_max(self, dep, board, if_max): 
+  def mini_max(self, dep, board, if_max, alpha=None, beta=None): 
+    if alpha is None: 
+      alpha = -math.inf
+    if beta is None: 
+      beta = math.inf
+      
+    # warunek zakończenia: głębokość 0 lub koniec gry
     if dep == 0 or board.if_win_the_game() is not None:
-        return board.score(), board
+        return board.score(), board, None
     if not if_max:
-        return self._minimize(dep, board)
-    return self._maximize(dep, board)
+        return self._minimize(dep, board, alpha, beta)
+    return self._maximize(dep, board, alpha, beta)
 
         
-  def _maximize(self, dep, board):
+  def _maximize(self, dep, board, alpha, beta):
     best_piece = None
     optimal_action = None
-    highest_evaluation = -10**6
+    highest_evaluation = -math.inf
     for action, piece in self.all_action(board, WHITE):
-        evaluation = self.mini_max(dep - 1, action, False)[0]
+        evaluation = self.mini_max(dep - 1, action, False, alpha, beta)[0]
         if evaluation >= highest_evaluation:
             highest_evaluation = evaluation
             best_piece = piece
             optimal_action = action
+            
+        # aktualizuj alpha
+        alpha = max(alpha, highest_evaluation)
+
+        # pruning
+        if alpha >= beta:
+          break 
+        
     return highest_evaluation, optimal_action, best_piece
 
 
-  def _minimize(self, dep, board):
+  def _minimize(self, dep, board, alpha, beta):
     best_piece = None
     optimal_action = None
-    lowest_evaluation = 10**6
+    lowest_evaluation = math.inf
     for action, piece in self.all_action(board, RED):
-        evaluation = self.mini_max(dep - 1, action, True)[0]
+        evaluation = self.mini_max(dep - 1, action, True, alpha, beta)[0]
         if evaluation <= lowest_evaluation:
             lowest_evaluation = evaluation
             best_piece = piece
             optimal_action = action
+        
+            
+        beta = min(beta, lowest_evaluation)
+
+        # pruning
+        if alpha >= beta:
+          break
+        
     return lowest_evaluation, optimal_action, best_piece
 
   # zwraca akcje czyli liste krotek gdzie (new_board, temp_obj) new_board to nowa plansza po symulowanym ruchu pionka color , temp_obj to pionek ktory ten ruch wykonal  
@@ -73,3 +96,5 @@ class MinimaxAlgorithm:
       if objects:
           board.remove(objects)
       return board
+    
+  
