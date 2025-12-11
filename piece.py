@@ -19,7 +19,7 @@ class Piece:
     self.set_xy()
     
   # czy pionek moze sie ruszyc na dane pole (tj. czy pole jest puste) 
-  def IfCollision(self,obj,row,col):
+  def IfCollision(self,obj,row,col):  # 
     # jest puste bo jest 0 
     if ( obj.board[row][col] == 0):
       return True
@@ -36,7 +36,7 @@ class Piece:
     return False
   
   # przesuwa pionka na nowe miejsce na plaszy przy robieniu potrzebnych aktualizacji 
-  def upgrate(self,board,win,ix):
+  def upgrate(self,board,win,ix):  # 
       pygame.draw.rect(win,BLACK,(self.col*SQUARE_SIZE,self.row*SQUARE_SIZE,SQUARE_SIZE,SQUARE_SIZE))
       #vi = board.board[self.row][self.col] #
       #board.board[self.row][self.col] = 0  #
@@ -56,7 +56,7 @@ class Piece:
       self.create_piece(win)
 
   # to jest funkcja napisana dla pionkow RED czyli playera  
-  def move_piece(self,board,win,mouse_position):
+  def move_piece(self,board,win,mouse_position): # 
     for x in range(len(board.possible_places_to_move)):
       # czy klikniety obszar jest w polu mozliwosci ruchu (possible_places_to_move)
       if ( board.possible_places_to_move[x].row * SQUARE_SIZE <= mouse_position[1] <=  board.possible_places_to_move[x].row * SQUARE_SIZE + SQUARE_SIZE and
@@ -69,17 +69,17 @@ class Piece:
         break
       
   # oblicza srodek pola na ktorym stoi pionek 
-  def set_xy(self):
+  def set_xy(self):  # 
     self.middleX = SQUARE_SIZE * self.col + SQUARE_SIZE // 2
     self.middleY = SQUARE_SIZE * self.row + SQUARE_SIZE // 2
 
   # rysuje pionka na planszy jako circle o promieniu radius i srodku w (self.middleX,self.middleY) 
-  def create_piece(self, win):
+  def create_piece(self, win): # 
     radius = SQUARE_SIZE//2 - self.PADDING 
     pygame.draw.circle(win, self.color, (self.middleX,self.middleY), radius)
     
   # tylko dla pionkow RED (playera) tworzy liste mozliwych ruchow pionka (bić i nie bić)
-  def check_capture_recursive(self, board, win):
+  def check_capture_recursive(self, board, win): # 
     self.drawBlackSquare(win, board)
     board.possible_places_to_move.clear()
     # zwraca slownik { (row,col) : [list_of_captured_pieces] } (mozliwe ruchy - bicia i nie bicia dla pionka) 
@@ -96,7 +96,7 @@ class Piece:
     #self.captured_pieces.clear() 
       
   # tylko dla pionkow RED (playera) usuwa zbite pionki z planszy i aktualizuje liczniki pionkow
-  def remove_piece(self, finalX, finalY, win, board, moves): 
+  def remove_piece(self, finalX, finalY, win, board, moves): # 
     piece_list = [] 
     for x in moves.items(): 
         tuple_ = x[0] # (row,col)
@@ -127,18 +127,18 @@ class Piece:
     #self.captured_pieces.clear()        
     
   # rysuje zloty krazek na polu gdzie pionek moze sie ruszyc
-  def drawFieldForPossibleMove(self, win): 
+  def drawFieldForPossibleMove(self, win): # 
     radius = SQUARE_SIZE//2 - self.PADDING * 4
     pygame.draw.circle(win, GOLDEN, (self.middleX,self.middleY), radius)
     
   # rysuje czarne pola na miejscach gdzie byly mozliwe ruchy 
-  def drawBlackSquare(self,win,board):
+  def drawBlackSquare(self,win,board): # 
     for x in range(len(board.possible_places_to_move)):
       pygame.draw.rect(win,BLACK,(board.possible_places_to_move[x].col*SQUARE_SIZE,board.possible_places_to_move[x].row*SQUARE_SIZE,SQUARE_SIZE,SQUARE_SIZE))
   
 
   # ustaiwia flage king na True (dla danego pionka) jezeli pionek dotarl do ostatniego rzedu 
-  def ifKing(self):
+  def ifKing(self):  # 
     if self.color == RED:
       if self.row == 0:
         self.king = True
@@ -147,7 +147,7 @@ class Piece:
         self.king = True
        
   # zwiększa licznik królów i dodaje do listy king_piece 
-  def setPictureFirstTime(self, board):
+  def setPictureFirstTime(self, board): # 
     if self.king == True and self not in board.king_piece: 
       board.king_piece.append(self)
       if self.color == RED: 
@@ -157,7 +157,7 @@ class Piece:
     
         
   # rysuje korone na pionku jezeli jest on krolowa (tj. self.king == True)
-  def setPicture(self,win, board):
+  def setPicture(self,win, board): # 
     self.setPictureFirstTime(board)
     # rysujemy korone na wszystkich pionkach z listy king_piece 
     for piece in board.king_piece:
@@ -165,7 +165,7 @@ class Piece:
          
   
   # przekazujemy obiekt board zeby zbadac mozliwe ruchy na pionku ktory ta funkcja wywoluje (bicia i nie bicia), jezeli nie ma mozliwych bić to zwraca pusta liste
-  def possible_moves(self, board):
+  def possible_moves(self, board): # 
     moves = {}
     directions = [(1, -1), (-1, -1), (1, 1), (-1, 1)] if self.king else [(-1, -1), (-1, 1)] if self.color == RED else [(1, -1), (1, 1)]
     def explore(row, col, captured):

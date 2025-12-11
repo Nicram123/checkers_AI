@@ -3,13 +3,11 @@ from constatnts import WIDTH, HEIGHT, SQUARE_SIZE, WHITE, RED, BLACK, GREEN
 from board import Board 
 from piece import Piece 
 from minimax import MinimaxAlgorithm
+from logger import save_measurement   
 import time 
-
 FPS = 60
 WIN = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption('checkers game AI')
-
-
 def main():
   run = True
   clock = pygame.time.Clock()
@@ -18,7 +16,6 @@ def main():
   board.create_all_board(WIN)
   first_left_click = True
   obj = 0
-
   while run:
     clock.tick(FPS)
     for event in pygame.event.get():
@@ -46,27 +43,24 @@ def main():
             board.change_turn()
             if board.turn == WHITE:
                 #board.refresh_counts()
-                
                 # Pomiar czasu 
-                
-                depth = 5
+                depth = 6
+                minimax.reset_counters()
                 start = time.time()
                 value, new_board, piece_ = minimax.mini_max(depth, board, True)
                 end = time.time()  # koniec pomiaru
                 elapsed = end - start
+                save_measurement(depth, elapsed, minimax.nodes_visited, minimax.prunes)
                 print(f"Głębokość: {depth} Czas: {elapsed:.3f} sekundy")
-                
-                
+                print(f"Odwiedzone węzły: {minimax.nodes_visited}")
+                print(f"Liczba przycięć: {minimax.prunes}")
                 print(f'White left: {board.white_count}, Red left: {board.red_count}')
                 print('----------')
                 print(f'White kings: {board.number_of_kings_white}, Red kings: {board.number_of_kings_red}')
                 board = new_board
-                board.create_all_board(WIN, piece_)  # <--- to zamiast manualnego recta
-                
+                board.create_all_board(WIN, piece_)  # <--- to zamiast manualnego recta 
                 board.change_turn()
                 print("AI made a move")
     pygame.display.update()
-
   pygame.quit()
-
 main()

@@ -19,11 +19,11 @@ class Board:
      
    
   # Min i max evaluation function
-  def score(self): 
+  def score(self): # 
     return self.white_count - self.red_count  + (self.number_of_kings_white * 0.5 - self.number_of_kings_red * 0.5)
    
   # usuwa pionki z planszy (listy list - zastepuje objekty Piece na 0) i zmnia licznik pionkow 
-  def remove(self, pieces):
+  def remove(self, pieces): # 
     for piece in pieces:
        if piece.king and piece in self.king_piece:
            self.king_piece.remove(piece)
@@ -41,7 +41,7 @@ class Board:
        
     
   # przsuwa pionek na nowe miejsce na plaszy (aktualizuje x i y czyli srodki pola i wiersz - row i kolumne - col) i zmienia board (liste list)          
-  def move(self, piece, row, col):
+  def move(self, piece, row, col): # 
     # aktualizuje liste list board czyli plansze w dawna pozycje pionka wstawia 0 a w nowe miejsce wstawia obiekt Piece
     self.board[piece.row][piece.col], self.board[row][col] = 0, piece
     # row i col aktualizuje czyli wiersz i kolumne danego pionka
@@ -53,12 +53,12 @@ class Board:
     # ewentualnie obsługa damki
 
   # zwraca wszystkie pionki danego koloru na planszy ktore jeszcze istnieją 
-  def list_pieces(self, color):
+  def list_pieces(self, color): # 
     return [obj for row in self.board for obj in row if obj != 0 and obj.color == color]
  
       
   # sprawdza czy ktos wygral gre jesli ktos ma 0 pionkow to przegrywa
-  def if_win_the_game(self):
+  def if_win_the_game(self): # 
     if self.red_count <= 0:
         return WHITE
     elif self.white_count <= 0:
@@ -66,7 +66,7 @@ class Board:
     return None
    
   # wypelnianie planszy board (listy list) pionkami lub 0 na poczatku gry 
-  def create_board(self):
+  def create_board(self): # 
     self.board = []
     for r in range(ROWS):
         row = []
@@ -80,7 +80,7 @@ class Board:
   
    
   # sprawdza czy na danym polu powinnien byc pionek (czarne pola i odpowiednie rzędy)
-  def piece_expected(self, r: int, c: int) -> bool:
+  def piece_expected(self, r: int, c: int) -> bool: # 
     # na czarnych polach postawione pionki , fausz wywrocone dla zielonych pól 
     if (r + c) % 2 == 0:
         return False
@@ -93,7 +93,7 @@ class Board:
     return False
 
   # rysowanie planszy i pionków na niej 
-  def create_all_board(self, win, selected_piece=None):
+  def create_all_board(self, win, selected_piece=None): # 
     self.create_squares(win)
     for r, row in enumerate(self.board):
         for c, cell in enumerate(row):
@@ -103,7 +103,7 @@ class Board:
         selected_piece.setPicture(win, self)
 
   # metoda do rysowania zielonych kwadratów planszy w odpowiednich miejscach
-  def create_squares(self, win):
+  def create_squares(self, win): # 
     win.fill(BLACK)
     for r in range(ROWS):
         for c in range(COLS):
@@ -113,12 +113,12 @@ class Board:
                 
                 
   # Zwraca prostokąt (pygame.Rect) odpowiadający polu na planszy dla wiersza r i kolumny c.            
-  def get_rect(self, r: int, c: int) -> pygame.Rect:
+  def get_rect(self, r: int, c: int) -> pygame.Rect: # 
     return pygame.Rect(r * SQUARE_SIZE, c * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
 
 
   # uzytkownik wybiera pionek klikajac na niego i wtedy zwraca obiekt pionka 
-  def choose_a_pown(self,pos):
+  def choose_a_pown(self,pos): # 
      for n in range(ROWS):
         for x in range(COLS):
            if ( n * SQUARE_SIZE <= pos[1] and pos[1] <= n * SQUARE_SIZE + SQUARE_SIZE ) and ( x * SQUARE_SIZE <= pos[0] and pos[0] <= x * SQUARE_SIZE + SQUARE_SIZE ):
@@ -131,7 +131,7 @@ class Board:
      return 0
   
   # Zmiana tury przy kazdym ruchu (na zmiane player - RED, AI - WHITE) 
-  def change_turn(self):
+  def change_turn(self): # 
     self.turn = RED if self.turn == WHITE else WHITE
   
   
